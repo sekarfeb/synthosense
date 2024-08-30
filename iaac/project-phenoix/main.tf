@@ -7,6 +7,7 @@ module "mysql_server" {
   source = "./instances/mysql-server"
 }
 
+
 module "apache_server" {
   source = "./instances/apache-server"
 }
@@ -18,6 +19,11 @@ module "squid_proxy" {
 module "exim_server" {
   source = "./instances/exim-server"
 }
+
+module "redis_server" {
+  source = "./instances/redis-server"
+}
+
 
 output "mysql-server_ip" {
   value = module.mysql_server.instance_ip
@@ -33,4 +39,8 @@ output "squid-proxy_ip" {
 
 output "exim-server_ip" {
   value = module.exim_server.instance_ip
+}
+
+output "redis_instance_id" {
+  value = module.redis_server.redis_instance_id
 }
