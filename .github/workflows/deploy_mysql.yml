@@ -13,19 +13,25 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: List files for debugging
+      run: |
+        echo "Listing files in the root directory:"
+        ls -R
+        echo "Listing files in the onlinebusinessmarketplace directory:"
+        ls -R onlinebusinessmarketplace
+        echo "Listing files in the ansible directory:"
+        ls -R onlinebusinessmarketplace/ansible
+        echo "Listing files in the mysql directory:"
+        ls -R onlinebusinessmarketplace/ansible/mysql
+
     - name: Install Ansible
       run: |
         sudo apt update
         sudo apt install -y ansible
 
-    - name: Move files for debugging
-      run: |
-        mv onlinebusinessmarketplace/ansible/mysql/mysql_install.yml .
-        mv onlinebusinessmarketplace/ansible/mysql/inventory .
-
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook -i inventory mysql_install.yml
+        ansible-playbook -i onlinebusinessmarketplace/ansible/mysql/inventory onlinebusinessmarketplace/ansible/mysql/mysql_install.yml
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
