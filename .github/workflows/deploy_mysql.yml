@@ -31,7 +31,7 @@ jobs:
 
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook -i onlinebusinessmarketplace/ansible/mysql/inventory onlinebusinessmarketplace/ansible/mysql/mysql_install.yml
+        ansible-playbook -i onlinebusinessmarketplace/ansible/mysql/inventory onlinebusinessmarketplace/ansible/mysql/mysql_install.yaml
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
