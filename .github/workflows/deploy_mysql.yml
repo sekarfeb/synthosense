@@ -13,16 +13,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Setup SSH Key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H 213.165.92.7 >> ~/.ssh/known_hosts
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
 
     - name: Test SSH Connection
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@213.165.92.7 'echo "SSH connection successful"'
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@213.165.92.7 'echo "SSH connection successful"'
 
     - name: Install Ansible
       run: |
@@ -31,7 +27,7 @@ jobs:
 
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook -i onlinebusinessmarketplace/ansible/mysql/inventory onlinebusinessmarketplace/ansible/mysql/mysql_install.yaml
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" ansible-playbook -i onlinebusinessmarketplace/ansible/mysql/inventory onlinebusinessmarketplace/ansible/mysql/mysql_install.yaml
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
@@ -41,4 +37,4 @@ jobs:
 
     - name: Verify MySQL Service
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@213.165.92.7 'systemctl status mysql'
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@213.165.92.7 'systemctl status mysql'
