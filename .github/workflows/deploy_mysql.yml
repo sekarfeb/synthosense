@@ -27,4 +27,4 @@ jobs:
 
     - name: Verify MySQL Service
       run: |
-        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} <your-ssh-user>@213.165.92.7 'systemctl status mysql'
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} root@213.165.92.7 'systemctl status mysql'
