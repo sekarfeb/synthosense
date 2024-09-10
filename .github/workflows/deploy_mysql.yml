@@ -20,20 +20,16 @@ jobs:
       run: |
         sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@213.165.92.7 'echo "SSH connection successful"'
 
-    - name: Install Ansible
-      run: |
-        sudo apt update
-        sudo apt install -y ansible
-
     - name: Run Ansible Playbook
       run: |
-        sshpass -p "${{ secrets.SSH_PASSWORD }}" ansible-playbook -i onlinebusinessmarketplace/ansible/mysql/inventory onlinebusinessmarketplace/ansible/mysql/mysql_install.yaml
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" ansible-playbook -i onlinebusinessmarketplace/ansible/mysql/inventory onlinebusinessmarketplace/ansible/mysql/mysql_install.yaml -vvv
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
         MYSQL_DB_NAME: ${{ secrets.MYSQL_DB_NAME }}
         MYSQL_USER: ${{ secrets.MYSQL_USER }}
         MYSQL_USER_PASSWORD: ${{ secrets.MYSQL_USER_PASSWORD }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
 
     - name: Verify MySQL Service
       run: |

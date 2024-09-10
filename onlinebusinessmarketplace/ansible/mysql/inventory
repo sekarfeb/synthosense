@@ -1,2 +1,2 @@
-[mysql_servers]
-213.165.92.7 ansible_user=root
+[all]
+213.165.92.7 ansible_ssh_user=root ansible_ssh_pass={{ lookup('env', 'SSH_PASSWORD') }}
