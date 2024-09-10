@@ -13,17 +13,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Ansible
-      uses: dawidd6/action-ansible-playbook@v3  # Use the correct version
-      with:
-        playbook: mysql_install.yml
-        inventory: inventory
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        extra_vars: |
-          mysql_root_password=${{ secrets.MYSQL_ROOT_PASSWORD }}
-          mysql_db_name=${{ secrets.MYSQL_DB_NAME }}
-          mysql_user=${{ secrets.MYSQL_USER }}
-          mysql_user_password=${{ secrets.MYSQL_USER_PASSWORD }}
+    - name: Install Ansible
+      run: |
+        sudo apt update
+        sudo apt install -y ansible
+
+    - name: Run Ansible Playbook
+      run: |
+        ansible-playbook -i inventory mysql_install.yml
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: 'False'
+        MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+        MYSQL_DB_NAME: ${{ secrets.MYSQL_DB_NAME }}
+        MYSQL_USER: ${{ secrets.MYSQL_USER }}
+        MYSQL_USER_PASSWORD: ${{ secrets.MYSQL_USER_PASSWORD }}
 
     - name: Verify MySQL Service
       run: |
