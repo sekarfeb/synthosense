@@ -20,7 +20,7 @@ jobs:
 
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook -i inventory mysql_install.yml
+        ansible-playbook -i ansible/mysql/inventory ansible/mysql/mysql_install.yml
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
