@@ -13,16 +13,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: List files for debugging
+    - name: Setup SSH Key
       run: |
-        echo "Listing files in the root directory:"
-        ls -R
-        echo "Listing files in the onlinebusinessmarketplace directory:"
-        ls -R onlinebusinessmarketplace
-        echo "Listing files in the ansible directory:"
-        ls -R onlinebusinessmarketplace/ansible
-        echo "Listing files in the mysql directory:"
-        ls -R onlinebusinessmarketplace/ansible/mysql
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 213.165.92.7 >> ~/.ssh/known_hosts
+
+    - name: Test SSH Connection
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@213.165.92.7 'echo "SSH connection successful"'
 
     - name: Install Ansible
       run: |
@@ -41,4 +41,4 @@ jobs:
 
     - name: Verify MySQL Service
       run: |
-        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} root@213.165.92.7 'systemctl status mysql'
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@213.165.92.7 'systemctl status mysql'
