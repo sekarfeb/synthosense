@@ -1,0 +1,30 @@
+name: Deploy MySQL
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Ansible
+      uses: dawidd6/action-ansible-playbook@v4
+      with:
+        playbook: mysql_install.yml
+        inventory: inventory
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        extra_vars: |
+          mysql_root_password=${{ secrets.MYSQL_ROOT_PASSWORD }}
+          mysql_db_name=${{ secrets.MYSQL_DB_NAME }}
+          mysql_user=${{ secrets.MYSQL_USER }}
+          mysql_user_password=${{ secrets.MYSQL_USER_PASSWORD }}
+
+    - name: Verify MySQL Service
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} <your-ssh-user>@213.165.92.7 'systemctl status mysql'

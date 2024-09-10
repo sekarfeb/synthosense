@@ -1,0 +1,36 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install MySQL
+      apt:
+        name: mysql-server
+        state: present
+        update_cache: yes
+
+    - name: Start MySQL service
+      systemd:
+        name: mysql
+        state: started
+        enabled: true
+
+    - name: Set MySQL root password
+      mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        host: "localhost"
+        priv: "*.*:ALL,GRANT"
+        state: present
+
+    - name: Create MySQL database
+      mysql_db:
+        name: "{{ mysql_db_name }}"
+        state: present
+
+    - name: Create a MySQL user
+      mysql_user:
+        name: "{{ mysql_user }}"
+        password: "{{ mysql_user_password }}"
+        priv: "{{ mysql_db_name }}.*:ALL"
+        host: "%"
+        state: present
