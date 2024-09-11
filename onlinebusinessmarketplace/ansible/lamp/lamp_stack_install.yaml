@@ -115,7 +115,16 @@
         state: restarted
 
     # Create a test PHP file to confirm PHP installation
-    - name: Create PHP info file
+    - name: Create PHP info file with additional content
       copy:
         dest: /var/www/html/info.php
-        content: "<?php phpinfo(); ?>"
+        content: |
+          <?php
+          // Display server info
+          echo "<h1>PHP is working!</h1>";
+          
+          // Display current date and time
+          $current_time = date('Y-m-d H:i:s');
+          echo "<p>Current server time is: $current_time</p>";
+
+          // Use phpinfo to display PHP configuration
