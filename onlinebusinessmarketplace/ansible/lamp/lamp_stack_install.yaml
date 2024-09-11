@@ -1,5 +1,5 @@
 ---
-- name: Clean up and reinstall Apache, MySQL, and PHP
+- name: Clean up and reinstall Apache, MySQL, PHP, and PostgreSQL
   hosts: all
   become: yes
 
@@ -126,7 +126,46 @@
         state: restarted
 
     # Create a test PHP file
-    - name: Create a test info.php file
+    - name: Create a test hello.php file
       ansible.builtin.copy:
-        dest: /var/www/html/info.php
+        dest: /var/www/html/hello.php
         content: "<?php echo 'Hello, World!'; ?>"
+    
+    # PostgreSQL Cleanup and Installation
+    - name: Stop PostgreSQL service if running
+      ansible.builtin.systemd:
+        name: postgresql
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
+    - name: Remove PostgreSQL server package
+      ansible.builtin.apt:
+        name: postgresql
+        state: absent
+
+    - name: Remove PostgreSQL configuration files
+      ansible.builtin.file:
+        path: /etc/postgresql
+        state: absent
+        recurse: yes
+      ignore_errors: yes
+
+    - name: Remove PostgreSQL log files
+      ansible.builtin.file:
+        path: /var/log/postgresql
+        state: absent
+        recurse: yes
+      ignore_errors: yes
+
+    - name: Install PostgreSQL server
+      ansible.builtin.apt:
+        name: postgresql
+        state: present
+        update_cache: yes
+
+    - name: Start and enable PostgreSQL service
+      ansible.builtin.systemd:
+        name: postgresql
+        state: started
+        enabled: yes
