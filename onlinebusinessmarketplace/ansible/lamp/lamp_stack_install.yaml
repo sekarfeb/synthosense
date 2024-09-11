@@ -1,5 +1,5 @@
 ---
-- name: Clean up and reinstall Apache and MySQL
+- name: Clean up and reinstall Apache, MySQL, and PHP
   hosts: all
   become: yes
 
@@ -91,3 +91,42 @@
         name: mysql
         state: started
         enabled: yes
+
+    # PHP Cleanup and Installation
+    - name: Remove PHP and related packages
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - php
+        - php-mysql
+        - libapache2-mod-php
+      ignore_errors: yes
+
+    - name: Install PHP and necessary modules
+      ansible.builtin.apt:
+        name:
+          - php
+          - php-mysql
+          - libapache2-mod-php
+        state: present
+        update_cache: yes
+
+    # Configure Apache to prioritize index.php
+    - name: Ensure index.php is the first in DirectoryIndex
+      ansible.builtin.lineinfile:
+        path: /etc/apache2/mods-enabled/dir.conf
+        regexp: '^(\s*DirectoryIndex\s*).*'
+        line: '        DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm'
+        backup: yes
+
+    - name: Restart Apache to apply PHP configuration
+      ansible.builtin.systemd:
+        name: apache2
+        state: restarted
+
+    # Create a test PHP file
+    - name: Create a test info.php file
+      ansible.builtin.copy:
+        dest: /var/www/html/info.php
+        content: "<?php phpinfo(); ?>"
