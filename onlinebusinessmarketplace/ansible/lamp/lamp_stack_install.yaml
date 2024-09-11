@@ -20,13 +20,6 @@
         name: apache2
         state: present
     
-    # Ensure Apache is started and enabled on boot
-    - name: Ensure Apache is started and enabled
-      systemd:
-        name: apache2
-        state: started
-        enabled: true
-
     # Modify Apache config to prioritize PHP files
     - name: Modify Apache config to prioritize PHP files
       lineinfile:
