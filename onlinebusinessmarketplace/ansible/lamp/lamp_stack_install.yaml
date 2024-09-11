@@ -1,61 +1,49 @@
 ---
-- name: Clean and Install Apache on Linux VM
+- name: Clean up and reinstall Apache
   hosts: all
   become: yes
+
   tasks:
-    - name: Remove existing Apache packages
-      apt:
+    - name: Stop Apache service if running
+      ansible.builtin.systemd:
+        name: apache2
+        state: stopped
+        enabled: no
+
+    - name: Remove Apache packages
+      ansible.builtin.apt:
         name: apache2
         state: absent
-        purge: yes
 
-    - name: Remove any residual Apache configuration files
-      file:
-        path: /etc/apache2
-        state: directory
-        recurse: yes
-      ignore_errors: yes
-
-    - name: Remove residual Apache configuration directory
-      file:
+    - name: Remove Apache configuration files
+      ansible.builtin.file:
         path: /etc/apache2
         state: absent
         recurse: yes
-      ignore_errors: yes
 
-    - name: Update apt cache
-      apt:
-        update_cache: yes
+    - name: Remove Apache log files
+      ansible.builtin.file:
+        path: /var/log/apache2
+        state: absent
+        recurse: yes
 
-    - name: Install Apache package
-      apt:
+    - name: Remove Apache cache files
+      ansible.builtin.file:
+        path: /var/cache/apache2
+        state: absent
+        recurse: yes
+
+    - name: Install Apache
+      ansible.builtin.apt:
         name: apache2
         state: present
 
-    - name: Ensure Apache is running
-      service:
+    - name: Ensure actions module is enabled
+      ansible.builtin.command:
+        cmd: a2enmod actions
+        creates: /etc/apache2/mods-enabled/actions.load
+
+    - name: Restart Apache to apply changes
+      ansible.builtin.systemd:
         name: apache2
-        state: started
-        enabled: yes
-
-    - name: Copy custom Apache configuration file (optional)
-      copy:
-        src: apache2.conf
-        dest: /etc/apache2/apache2.conf
-        owner: root
-        group: root
-        mode: '0644'
-      # Ensure this task is skipped if you don't have a custom file
-      when: false
-
-    - name: Ensure Apache is listening on port 80 (optional)
-      lineinfile:
-        path: /etc/apache2/ports.conf
-        line: 'Listen 80'
-        create: yes
-        state: present
-
-    - name: Reload Apache to apply configuration changes
-      service:
-        name: apache2
-        state: reloaded
+        state: restarted
