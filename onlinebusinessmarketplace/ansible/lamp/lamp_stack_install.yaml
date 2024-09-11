@@ -12,9 +12,16 @@
     - name: Remove any residual Apache configuration files
       file:
         path: /etc/apache2
+        state: directory
+        recurse: yes
+      ignore_errors: yes
+
+    - name: Remove residual Apache configuration directory
+      file:
+        path: /etc/apache2
         state: absent
         recurse: yes
-        force: yes
+      ignore_errors: yes
 
     - name: Update apt cache
       apt:
