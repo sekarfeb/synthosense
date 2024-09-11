@@ -22,7 +22,7 @@ jobs:
 
     - name: Run Ansible Playbook
       run: |
-        sshpass -p "${{ secrets.SSH_PASSWORD }}" ansible-playbook -i onlinebusinessmarketplace/ansible/mysql/inventory onlinebusinessmarketplace/ansible/mysql/mysql_install.yaml -vvv
+        sshpass -p "${{ secrets.SSH_PASSWORD }}" ansible-playbook -i onlinebusinessmarketplace/ansible/lamp/inventory onlinebusinessmarketplace/ansible/lamp/lamp_stack_install.yaml -vvv
       env:
         ANSIBLE_HOST_KEY_CHECKING: 'False'
         MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
