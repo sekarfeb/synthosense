@@ -9,6 +9,13 @@
         state: absent
         purge: yes
 
+    - name: Remove any residual Apache configuration files
+      file:
+        path: /etc/apache2
+        state: absent
+        recurse: yes
+        force: yes
+
     - name: Update apt cache
       apt:
         update_cache: yes
@@ -25,7 +32,6 @@
         enabled: yes
 
     - name: Copy custom Apache configuration file (optional)
-      # Ensure the source file exists in the local directory or specify the correct path
       copy:
         src: apache2.conf
         dest: /etc/apache2/apache2.conf
@@ -36,7 +42,6 @@
       when: false
 
     - name: Ensure Apache is listening on port 80 (optional)
-      # Uncomment if you need to ensure the Apache configuration listens on port 80
       lineinfile:
         path: /etc/apache2/ports.conf
         line: 'Listen 80'
