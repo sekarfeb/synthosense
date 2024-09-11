@@ -20,18 +20,21 @@
         path: /etc/apache2
         state: absent
         recurse: yes
+      ignore_errors: yes
 
     - name: Remove Apache log files
       ansible.builtin.file:
         path: /var/log/apache2
         state: absent
         recurse: yes
+      ignore_errors: yes
 
     - name: Remove Apache cache files
       ansible.builtin.file:
         path: /var/cache/apache2
         state: absent
         recurse: yes
+      ignore_errors: yes
 
     - name: Install Apache
       ansible.builtin.apt:
