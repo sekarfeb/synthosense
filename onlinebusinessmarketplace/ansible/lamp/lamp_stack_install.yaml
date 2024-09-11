@@ -129,4 +129,4 @@
     - name: Create a test info.php file
       ansible.builtin.copy:
         dest: /var/www/html/info.php
-        content: "<?php phpinfo(); ?>"
+        content: "<?php echo 'Hello, World!'; ?>"
