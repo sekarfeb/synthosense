@@ -1,9 +1,10 @@
 ---
-- name: Clean up and reinstall Apache
+- name: Clean up and reinstall Apache and MySQL
   hosts: all
   become: yes
 
   tasks:
+    # Apache Cleanup and Installation
     - name: Stop Apache service if running
       ansible.builtin.systemd:
         name: apache2
@@ -40,6 +41,7 @@
       ansible.builtin.apt:
         name: apache2
         state: present
+        update_cache: yes
 
     - name: Ensure actions module is enabled
       ansible.builtin.command:
@@ -50,3 +52,42 @@
       ansible.builtin.systemd:
         name: apache2
         state: restarted
+
+    # MySQL Cleanup and Installation
+    - name: Stop MySQL service if running
+      ansible.builtin.systemd:
+        name: mysql
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
+    - name: Remove MySQL server package
+      ansible.builtin.apt:
+        name: mysql-server
+        state: absent
+
+    - name: Remove MySQL configuration files
+      ansible.builtin.file:
+        path: /etc/mysql
+        state: absent
+        recurse: yes
+      ignore_errors: yes
+
+    - name: Remove MySQL log files
+      ansible.builtin.file:
+        path: /var/log/mysql
+        state: absent
+        recurse: yes
+      ignore_errors: yes
+
+    - name: Install MySQL server
+      ansible.builtin.apt:
+        name: mysql-server
+        state: present
+        update_cache: yes
+
+    - name: Start and enable MySQL service
+      ansible.builtin.systemd:
+        name: mysql
+        state: started
+        enabled: yes
