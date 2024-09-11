@@ -1,53 +1,54 @@
 ---
-- hosts: all
-  become: true
+- name: Clean and Install Apache on Linux VM
+  hosts: all
+  become: yes
   tasks:
-
-    # Update the system
-    - name: Update apt repository
-      apt:
-        update_cache: yes
-
-    # Clean up existing Apache installation
-    - name: Remove Apache if installed
+    - name: Remove existing Apache packages
       apt:
         name: apache2
         state: absent
+        purge: yes
 
-    # Install Apache
-    - name: Install Apache
+    - name: Remove any residual Apache configuration files
+      file:
+        path: /etc/apache2
+        state: absent
+        recurse: yes
+        force: yes
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Apache package
       apt:
         name: apache2
         state: present
-    
-    # Modify Apache config to prioritize PHP files
-    - name: Modify Apache config to prioritize PHP files
-      lineinfile:
-        path: /etc/apache2/mods-enabled/dir.conf
-        regexp: '^(\s*)DirectoryIndex'
-        line: 'DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm'
-        state: present
-        backrefs: yes
 
-    # Restart Apache to apply changes
-    - name: Restart Apache
-      systemd:
+    - name: Ensure Apache is running
+      service:
         name: apache2
-        state: restarted
-        enabled: true  # Ensure Apache is enabled to start at boot
-        daemon_reload: yes  # Reload systemd to recognize any new unit files or changes
+        state: started
+        enabled: yes
 
-    # Create a test PHP file to confirm PHP installation
-    - name: Create PHP info file with additional content
-      copy:
-        dest: /var/www/html/info.php
-        content: |
-          <?php
-          // Display server info
-          echo "<h1>PHP is working!</h1>";
-          
-          // Display current date and time
-          $current_time = date('Y-m-d H:i:s');
-          echo "<p>Current server time is: $current_time</p>";
+    - name: Copy custom Apache configuration file (optional)
+      # Uncomment if you have a custom configuration file to deploy
+      # copy:
+      #   src: /path/to/your/apache2.conf
+      #   dest: /etc/apache2/apache2.conf
+      #   owner: root
+      #   group: root
+      #   mode: '0644'
 
-          // Use phpinfo to display PHP configuration
+    - name: Ensure Apache is listening on port 80 (optional)
+      # Uncomment if you need to ensure the Apache configuration listens on port 80
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        line: 'Listen 80'
+        create: yes
+        state: present
+
+    - name: Reload Apache to apply configuration changes
+      service:
+        name: apache2
+        state: reloaded
