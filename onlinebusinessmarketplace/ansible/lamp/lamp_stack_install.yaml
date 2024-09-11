@@ -34,6 +34,8 @@
       systemd:
         name: apache2
         state: restarted
+        enabled: true  # Ensure Apache is enabled to start at boot
+        daemon_reload: yes  # Reload systemd to recognize any new unit files or changes
 
     # Create a test PHP file to confirm PHP installation
     - name: Create PHP info file with additional content
