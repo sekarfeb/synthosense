@@ -1,4 +1,4 @@
-name: Deploy MySQL
+name: Deploy LAMP Stack
 
 on:
   push:
@@ -31,6 +31,4 @@ jobs:
         MYSQL_USER_PASSWORD: ${{ secrets.MYSQL_USER_PASSWORD }}
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
 
-    - name: Verify MySQL Service
-      run: |
-        sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no root@213.165.92.7 'systemctl status mysql'
+    
