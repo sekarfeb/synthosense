@@ -1,5 +1,5 @@
 ---
-- hosts: alldd
+- hosts: all
   become: true
   tasks:
 
