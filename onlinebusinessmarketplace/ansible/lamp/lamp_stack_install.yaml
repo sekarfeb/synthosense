@@ -9,13 +9,6 @@
         state: absent
         purge: yes
 
-    - name: Remove any residual Apache configuration files
-      file:
-        path: /etc/apache2
-        state: absent
-        recurse: yes
-        force: yes
-
     - name: Update apt cache
       apt:
         update_cache: yes
