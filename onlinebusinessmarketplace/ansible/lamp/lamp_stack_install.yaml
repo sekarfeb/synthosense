@@ -32,13 +32,15 @@
         enabled: yes
 
     - name: Copy custom Apache configuration file (optional)
-      # Uncomment if you have a custom configuration file to deploy
-      # copy:
-      #   src: /path/to/your/apache2.conf
-      #   dest: /etc/apache2/apache2.conf
-      #   owner: root
-      #   group: root
-      #   mode: '0644'
+      # Ensure the source file exists in the local directory or specify the correct path
+      copy:
+        src: apache2.conf
+        dest: /etc/apache2/apache2.conf
+        owner: root
+        group: root
+        mode: '0644'
+      # Ensure this task is skipped if you don't have a custom file
+      when: false
 
     - name: Ensure Apache is listening on port 80 (optional)
       # Uncomment if you need to ensure the Apache configuration listens on port 80
