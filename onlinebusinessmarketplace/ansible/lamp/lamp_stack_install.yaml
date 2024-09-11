@@ -14,28 +14,6 @@
         name: apache2
         state: absent
 
-    # Clean up existing MySQL installation
-    - name: Remove MySQL if installed
-      apt:
-        name: mysql-server
-        state: absent
-
-    # Clean up existing PHP installation
-    - name: Remove PHP if installed
-      apt:
-        name:
-          - php
-          - php-mysql
-          - libapache2-mod-php
-        state: absent
-
-    # Autoremove unnecessary dependencies after uninstall
-    - name: Autoremove unnecessary packages
-      apt:
-        name: "*"
-        state: latest
-        autoremove: yes
-
     # Install Apache
     - name: Install Apache
       apt:
@@ -48,56 +26,6 @@
         name: apache2
         state: started
         enabled: true
-    
-    # Install MySQL
-    - name: Install MySQL server
-      apt:
-        name: mysql-server
-        state: present
-
-    # Secure MySQL installation (manual input required)
-    - name: Run mysql_secure_installation script (manual interaction)
-      command: mysql_secure_installation
-
-    # Start MySQL and enable on boot
-    - name: Ensure MySQL is started and enabled
-      systemd:
-        name: mysql
-        state: started
-        enabled: true
-
-    # Set MySQL root password
-    - name: Set MySQL root password
-      mysql_user:
-        name: root
-        password: "{{ mysql_root_password }}"
-        host: "localhost"
-        priv: "*.*:ALL,GRANT"
-        state: present
-
-    # Create a MySQL database
-    - name: Create MySQL database
-      mysql_db:
-        name: "{{ mysql_db_name }}"
-        state: present
-
-    # Create a MySQL user with privileges on the database
-    - name: Create MySQL user
-      mysql_user:
-        name: "{{ mysql_user }}"
-        password: "{{ mysql_user_password }}"
-        priv: "{{ mysql_db_name }}.*:ALL"
-        host: "%"
-        state: present
-
-    # Install PHP along with MySQL support
-    - name: Install PHP and PHP-MySQL
-      apt:
-        name:
-          - php
-          - php-mysql
-          - libapache2-mod-php
-        state: present
 
     # Modify Apache config to prioritize PHP files
     - name: Modify Apache config to prioritize PHP files
